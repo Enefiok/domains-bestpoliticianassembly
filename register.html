@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Best Politicians Masterclass & Summits</title>
+    <meta name="description" content="Register for upcoming Best Politicians summits and masterclasses.">
+    <link rel="canonical" href="https://bestpoliticians.org/register.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.11.2/build/css/intlTelInput.css">
+    <link rel="icon" type="image/png" href="assets/images/logo2.jpg">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .group:hover .group-hover\:rotate-y-180 { transform: rotateY(180deg); }
+        /* Fix intl-tel-input integration with Tailwind */
+        .iti { width: 100%; display: block; }
+        .iti__selected-country { background-color: #f8fafc; border-top-left-radius: 0.5rem; border-bottom-left-radius: 0.5rem; }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+<header class="sticky top-0 z-50 bg-[#1a3a6b] shadow-sm" role="banner">
+    <div class="mx-auto max-w-[1340px] px-5">
+        <div class="flex h-[77px] items-center justify-between">
+            <a href="https://bestpoliticians.org/" class="shrink-0 flex items-center group -mr-8" aria-label="Best Politicians - Home">
+                <img 
+                    width="300" 
+                    height="60" 
+                    src="assets/images/best logo.png" 
+                    alt="Best Politicians logo - return to homepage"
+                    class="h-[60px] w-[300px] object-contain object-left"
+                >
+            </a>
+            <nav class="hidden lg:flex items-center gap-8" aria-label="Main navigation">
+                <ul class="flex items-center gap-7 text-sm font-semibold">
+                    <li><a href="index.html" class="text-white hover:text-gray-200 transition-colors">Home</a></li>
+                    <li class="dropdown-container">
+                        <a href="who-we-are.html" class="text-white hover:text-gray-200 transition-colors flex items-center gap-1.5 py-2">
+                            About Us
+                            <iconify-icon icon="lucide:chevron-down" class="text-xs transition-transform duration-200"></iconify-icon>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="who-we-are.html" class="dropdown-item">Who we are</a>
+                            <a href="what-we-do.html" class="dropdown-item">What we do</a>
+                        </div>
+                    </li>
+                    <li class="dropdown-container">
+                        <a href="destinations.html" class="text-white hover:text-gray-200 transition-colors flex items-center gap-1.5 py-2">
+                            Destinations
+                            <iconify-icon icon="lucide:chevron-down" class="text-xs transition-transform duration-200"></iconify-icon>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="Dubai.html" class="dropdown-item">Dubai, UAE</a>
+                            <a href="London.html" class="dropdown-item">London, UK</a>
+                            <a href="Kuala.html" class="dropdown-item">Kuala, Malaysia</a>
+                        </div>
+                    </li>
+                    <li class="dropdown-container">
+                        <a href="get-visa.html" class="text-white hover:text-gray-200 transition-colors flex items-center gap-1.5 py-2">
+                            Get Visa
+                        </a>
+                    </li>
+                    <li class="dropdown-container">
+                        <a href="terms-and-conditions.html" class="text-white hover:text-gray-200 transition-colors flex items-center gap-1.5 py-2">
+                            Information
+                            <iconify-icon icon="lucide:chevron-down" class="text-xs transition-transform duration-200"></iconify-icon>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="payment.html" class="dropdown-item">Payment</a>
+                            <a href="terms-and-conditions.html" class="dropdown-item">Terms and Conditions</a>
+                        </div>
+                    </li>
+                    <li><a href="contact-us.html" class="text-white hover:text-gray-200 transition-colors">Contact Us</a></li>
+                </ul>
+                <a href="register.html" class="rounded bg-white px-7 py-3 text-sm font-medium text-[#1a3a6b] hover:bg-gray-100 transition-colors shadow-sm">
+                    Register Now
+                </a>
+            </nav>
+            <button id="menu-toggle" class="lg:hidden flex items-center justify-center p-2 text-white focus:outline-none cursor-pointer" aria-label="Toggle mobile menu" aria-expanded="false">
+                <iconify-icon icon="lucide:menu" class="text-3xl pointer-events-none"></iconify-icon>
+            </button>
+        </div>
+    </div>
+    <div id="mobile-menu" class="hidden lg:hidden bg-[#1a3a6b] border-t border-blue-900/60 px-5 py-6 space-y-4 shadow-lg">
+        <ul class="flex flex-col space-y-2 text-base font-semibold">
+            <li><a href="index.html" class="block text-white hover:text-gray-200 transition-colors py-2">Home</a></li>
+            <li class="mobile-dropdown">
+                <button class="mobile-dropdown-btn w-full flex items-center justify-between text-white hover:text-gray-200 py-2 focus:outline-none cursor-pointer">
+                    <span>About Us</span>
+                    <iconify-icon icon="lucide:chevron-down" class="chevron-icon text-sm transition-transform duration-200 pointer-events-none"></iconify-icon>
+                </button>
+                <div class="mobile-dropdown-menu hidden pl-4 pt-1 pb-2 space-y-2 border-l border-blue-800/60 ml-2 mt-1">
+                    <a href="who-we-are.html" class="block text-sm text-gray-200 hover:text-white py-1">Who we are</a>
+                    <a href="what-we-do.html" class="block text-sm text-gray-200 hover:text-white py-1">What we do</a>
+                </div>
+            </li>
+            <li class="mobile-dropdown">
+                <button class="mobile-dropdown-btn w-full flex items-center justify-between text-white hover:text-gray-200 py-2 focus:outline-none cursor-pointer">
+                    <span>Destinations</span>
+                    <iconify-icon icon="lucide:chevron-down" class="chevron-icon text-sm transition-transform duration-200 pointer-events-none"></iconify-icon>
+                </button>
+                <div class="mobile-dropdown-menu hidden pl-4 pt-1 pb-2 space-y-2 border-l border-blue-800/60 ml-2 mt-1">
+                    <a href="Dubai.html" class="block text-sm text-gray-200 hover:text-white py-1">Dubai, UAE</a>
+                    <a href="London.html" class="block text-sm text-gray-200 hover:text-white py-1">London, UK</a>
+                    <a href="Kuala.html" class="block text-sm text-gray-200 hover:text-white py-1">Kuala, Malaysia</a>
+                </div>
+            </li>
+            <li><a href="get-visa.html" class="block text-white hover:text-gray-200 transition-colors py-2">Get Visa</a></li>
+            <li class="mobile-dropdown">
+                <button class="mobile-dropdown-btn w-full flex items-center justify-between text-white hover:text-gray-200 py-2 focus:outline-none cursor-pointer">
+                    <span>Information</span>
+                    <iconify-icon icon="lucide:chevron-down" class="chevron-icon text-sm transition-transform duration-200 pointer-events-none"></iconify-icon>
+                </button>
+                <div class="mobile-dropdown-menu hidden pl-4 pt-1 pb-2 space-y-2 border-l border-blue-800/60 ml-2 mt-1">
+                    <a href="payment.html" class="block text-sm text-gray-200 hover:text-white py-1">Payment</a>
+                    <a href="terms-and-conditions.html" class="block text-sm text-gray-200 hover:text-white py-1">Terms and Conditions</a>
+                </div>
+            </li>
+            <li><a href="contact-us.html" class="block text-white hover:text-gray-200 transition-colors py-2">Contact Us</a></li>
+        </ul>
+        <div class="pt-3 border-t border-blue-900/50">
+            <a href="register.html" class="block text-center rounded bg-white px-7 py-3 text-sm font-bold text-[#1a3a6b] hover:bg-gray-100 transition-colors shadow-sm">
+                Register Now
+            </a>
+        </div>
+    </div>
+</header>
+    <main id="main-content">
+        <div id="cards-view">
+            <section class="relative min-h-[65vh] md:min-h-[75vh] overflow-hidden bg-white" aria-label="Hero banner">
+                <div class="absolute inset-0 w-full h-full">
+                    <img src="assets/images/hero.jpg" alt="Best Politicians Registration Summit" class="w-full h-full object-cover">
+                </div>
+                <div class="absolute inset-0 bg-[#1a3a6b] lg:[clip-path:polygon(0_0,62%_0,45%_100%,0_100%)] flex items-center px-8 lg:px-20 py-16">
+                    <div class="max-w-xl z-10">
+                        <span class="text-blue-200 font-mono text-xs uppercase tracking-widest font-bold">Global Leadership Portals</span>
+                        <h1 class="mt-3 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold uppercase leading-[1.2] tracking-wide text-white">
+                            SECURE YOUR <br>DELEGATE SEAT
+                        </h1>
+                    </div>
+                </div>
+            </section>
+            <section class="py-24 bg-slate-50" aria-labelledby="registration-destinations-heading">
+                <div class="mx-auto max-w-[1200px] px-6">
+                    <div class="text-center max-w-3xl mx-auto mb-16">
+                        <span class="text-[#1a3a6b] text-xs font-bold uppercase tracking-widest">Upcoming Event Locations</span>
+                        <h2 id="registration-destinations-heading" class="text-3xl md:text-4xl font-black text-gray-950 tracking-tight mt-2 uppercase">
+                            CHOOSE YOUR <span class="text-[#1a3a6b]">DESTINATION</span>
+                        </h2>
+                        <p class="mt-4 text-base text-gray-600">
+                            Hover over any destination card to review details and access the direct registration portal.
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="h-[420px] perspective-1000 group cursor-pointer">
+                            <div class="relative w-full h-full duration-700 transform-style-3d group-hover:rotate-y-180 shadow-xl rounded-2xl">
+                                <div class="absolute inset-0 w-full h-full bg-[#3b82f6] rounded-2xl p-8 flex flex-col items-center justify-center text-white backface-hidden border border-blue-400">
+                                    <div class="w-28 h-28 rounded-xl overflow-hidden mb-6 shadow-md border-2 border-white/40">
+                                        <img src="assets/images/images (13).jpg" alt="KUALA LUMPUR" class="w-full h-full object-cover">
+                                    </div>
+                                    <h3 class="text-2xl md:text-3xl font-extrabold uppercase tracking-wide text-center card-location">KUALA LUMPUR</h3>
+                                    <p class="mt-2 text-sm md:text-base font-medium text-blue-100 tracking-wider card-date">24th-27 March, 2027</p>
+                                    <span class="mt-6 inline-block text-xs uppercase font-mono tracking-widest bg-white/20 px-3 py-1.5 rounded-full text-white">Hover to Register</span>
+                                </div>
+                                <div class="absolute inset-0 w-full h-full bg-[#1a3a6b] rounded-2xl p-8 flex flex-col items-center justify-center text-white backface-hidden rotate-y-180 border border-blue-900">
+                                    <h3 class="text-2xl font-black uppercase mb-3">KUALA LUMPUR</h3>
+                                    <p class="text-sm text-blue-100 text-center mb-8 max-w-xs leading-relaxed">
+                                        24th-27 March, 2027. Connect with political leaders and governance pioneers to discuss regional policy alignment.
+                                    </p>
+                                    <button onclick="selectDestination('KUALA LUMPUR', '24th-27 March, 2027')" class="rounded-xl bg-white text-[#1a3a6b] px-8 py-4 text-base font-extrabold uppercase tracking-wider hover:bg-blue-50 transition-colors shadow-lg cursor-pointer">
+                                        Register Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="h-[420px] perspective-1000 group cursor-pointer">
+                            <div class="relative w-full h-full duration-700 transform-style-3d group-hover:rotate-y-180 shadow-xl rounded-2xl">
+                                <div class="absolute inset-0 w-full h-full bg-[#3b82f6] rounded-2xl p-8 flex flex-col items-center justify-center text-white backface-hidden border border-blue-400">
+                                    <div class="w-28 h-28 rounded-xl overflow-hidden mb-6 shadow-md border-2 border-white/40">
+                                        <img src="assets/images/hero.jpg" alt="BUCHAREST , ROMANIA" class="w-full h-full object-cover">
+                                    </div>
+                                    <h3 class="text-2xl md:text-3xl font-extrabold uppercase tracking-wide text-center card-location">BUCHAREST , ROMANIA</h3>
+                                    <p class="mt-2 text-sm md:text-base font-medium text-blue-100 tracking-wider card-date">16TH-19TH JUNE , 2027</p>
+                                    <span class="mt-6 inline-block text-xs uppercase font-mono tracking-widest bg-white/20 px-3 py-1.5 rounded-full text-white">Hover to Register</span>
+                                </div>
+                                <div class="absolute inset-0 w-full h-full bg-[#1a3a6b] rounded-2xl p-8 flex flex-col items-center justify-center text-white backface-hidden rotate-y-180 border border-blue-900">
+                                    <h3 class="text-2xl font-black uppercase mb-3">BUCHAREST , ROMANIA</h3>
+                                    <p class="text-sm text-blue-100 text-center mb-8 max-w-xs leading-relaxed">
+                                        16TH-19TH JUNE , 2027. Engage in parliamentary strategy sessions and legislative frameworks.
+                                    </p>
+                                    <button onclick="selectDestination('BUCHAREST , ROMANIA', '16TH-19TH JUNE , 2027')" class="rounded-xl bg-white text-[#1a3a6b] px-8 py-4 text-base font-extrabold uppercase tracking-wider hover:bg-blue-50 transition-colors shadow-lg cursor-pointer">
+                                        Register Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="h-[420px] perspective-1000 group cursor-pointer">
+                            <div class="relative w-full h-full duration-700 transform-style-3d group-hover:rotate-y-180 shadow-xl rounded-2xl">
+                                <div class="absolute inset-0 w-full h-full bg-[#3b82f6] rounded-2xl p-8 flex flex-col items-center justify-center text-white backface-hidden border border-blue-400">
+                                    <div class="w-28 h-28 rounded-xl overflow-hidden mb-6 shadow-md border-2 border-white/40">
+                                        <img src="assets/images/cyp8-1-1.jpg" alt="BRUSSEL, BELGIUM" class="w-full h-full object-cover">
+                                    </div>
+                                    <h3 class="text-2xl md:text-3xl font-extrabold uppercase tracking-wide text-center card-location">BRUSSEL, BELGIUM</h3>
+                                    <p class="mt-2 text-sm md:text-base font-medium text-blue-100 tracking-wider card-date">16TH-19TH JUNE , 2027</p>
+                                    <span class="mt-6 inline-block text-xs uppercase font-mono tracking-widest bg-white/20 px-3 py-1.5 rounded-full text-white">Hover to Register</span>
+                                </div>
+                                <div class="absolute inset-0 w-full h-full bg-[#1a3a6b] rounded-2xl p-8 flex flex-col items-center justify-center text-white backface-hidden rotate-y-180 border border-blue-900">
+                                    <h3 class="text-2xl font-black uppercase mb-3">BRUSSEL, BELGIUM</h3>
+                                    <p class="text-sm text-blue-100 text-center mb-8 max-w-xs leading-relaxed">
+                                        16TH-19TH JUNE , 2027. Participate in advanced diplomatic training and public policy workshops.
+                                    </p>
+                                    <button onclick="selectDestination('BRUSSEL, BELGIUM', '16TH-19TH JUNE , 2027')" class="rounded-xl bg-white text-[#1a3a6b] px-8 py-4 text-base font-extrabold uppercase tracking-wider hover:bg-blue-50 transition-colors shadow-lg cursor-pointer">
+                                        Register Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div id="form-view" class="hidden py-16 bg-slate-50 min-h-screen">
+            <div class="mx-auto max-w-[800px] bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-slate-200">
+                <button onclick="showCardsView()" class="mb-6 text-sm font-bold text-[#1a3a6b] hover:underline flex items-center gap-1 cursor-pointer">
+                    <iconify-icon icon="lucide:arrow-left"></iconify-icon> Choose a different destination
+                </button>
+                <div class="mb-8 border-b border-slate-200 pb-4">
+                    <h2 id="form-title" class="text-xl md:text-2xl font-black uppercase text-gray-900">BEST DIPLOMATS <span id="display-location">Kuala Lumpur</span> <span id="display-date">2027</span></h2>
+                    <div class="flex justify-between items-center mt-3">
+                        <span id="step-indicator" class="text-xs font-mono font-bold text-[#1a3a6b] uppercase">Step 1 of 3</span>
+                        <span id="progress-text" class="text-xs font-bold text-gray-500">33%</span>
+                    </div>
+                    <div class="w-full bg-slate-200 h-2 rounded-full mt-2 overflow-hidden">
+                        <div id="progress-bar" class="bg-[#1a3a6b] h-full transition-all duration-300" style="width: 33%;"></div>
+                    </div>
+                </div>
+                <form action="send-email.php" method="POST" id="multistep-form">
+                    <input type="hidden" name="subject" id="email-subject" value="New Registration Submission">
+                    <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+                    <input type="hidden" name="Selected_Destination" id="input-destination" value="">
+                    <div class="form-step space-y-6" data-step="1">
+                        <h3 class="text-base font-bold text-gray-900 border-l-4 border-[#1a3a6b] pl-3 uppercase">Personal Information</h3>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Name <span class="text-red-500">*</span></label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="text" name="First_Name" placeholder="First" required class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1a3a6b] outline-none">
+                                <input type="text" name="Last_Name" placeholder="Last" required class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1a3a6b] outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Sex <span class="text-red-500">*</span></label>
+                            <div class="flex gap-6 mt-2">
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Sex" value="Male" required> Male</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Sex" value="Female"> Female</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Sex" value="Other"> Other</label>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1">Date of Birth <span class="text-red-500">*</span></label>
+                                <select name="DOB_Day" required class="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white">
+                                    <option value="">Day</option>
+                                    <script>for(let i=1; i<=31; i++) document.write(`<option value="${i}">${i}</option>`);</script>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1">&nbsp;</label>
+                                <select name="DOB_Month" required class="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white">
+                                    <option value="">Month</option>
+                                    <option value="January">January</option><option value="February">February</option><option value="March">March</option><option value="April">April</option><option value="May">May</option><option value="June">June</option><option value="July">July</option><option value="August">August</option><option value="September">September</option><option value="October">October</option><option value="November">November</option><option value="December">December</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1">&nbsp;</label>
+                                <select name="DOB_Year" required class="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white">
+                                    <option value="">Year</option>
+                                    <script>for(let i=2015; i>=1940; i--) document.write(`<option value="${i}">${i}</option>`);</script>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                                <input type="email" name="Email" placeholder="Enter Email" required class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1a3a6b] outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Confirm Email <span class="text-red-500">*</span></label>
+                                <input type="email" placeholder="Confirm Email" required class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1a3a6b] outline-none">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Phone <span class="text-red-500">*</span></label>
+                                <input type="tel" id="phone" name="Phone" required class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1a3a6b] outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">WhatsApp Number</label>
+                                <input type="tel" id="whatsapp" name="WhatsApp" class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1a3a6b] outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Address <span class="text-red-500">*</span></label>
+                            <input type="text" name="Street_Address" placeholder="Street Address" required class="w-full p-3 border border-slate-300 rounded-lg text-sm mb-3">
+                            <input type="text" name="Address_Line_2" placeholder="Address Line 2" class="w-full p-3 border border-slate-300 rounded-lg text-sm mb-3">
+                            <div class="grid grid-cols-2 gap-3 mb-3">
+                                <input type="text" name="City" placeholder="City" required class="w-full p-3 border border-slate-300 rounded-lg text-sm">
+                                <input type="text" name="State" placeholder="State / Province / Region" required class="w-full p-3 border border-slate-300 rounded-lg text-sm">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <input type="text" name="Zip_Code" placeholder="ZIP / Postal Code" required class="w-full p-3 border border-slate-300 rounded-lg text-sm">
+                                <input type="text" name="Country" placeholder="Country" required class="w-full p-3 border border-slate-300 rounded-lg text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Nationality <span class="text-red-500">*</span></label>
+                            <input type="text" name="Nationality" required class="w-full p-3 border border-slate-300 rounded-lg text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Company / Educational Institute Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="Company_Or_School" required class="w-full p-3 border border-slate-300 rounded-lg text-sm">
+                        </div>
+                        <div class="flex justify-end pt-4">
+                            <button type="button" onclick="nextStep(1)" class="rounded-xl bg-[#1a3a6b] px-8 py-3 text-sm font-bold text-white hover:bg-[#0d2647] cursor-pointer">NEXT</button>
+                        </div>
+                    </div>
+                    <div class="form-step space-y-6 hidden" data-step="2">
+                        <h3 class="text-base font-bold text-gray-900 border-l-4 border-[#1a3a6b] pl-3 uppercase">Package Selection</h3>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-3">How did you get to know about Best Politicians? <span class="text-red-500">*</span></label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Referral" value="Facebook"> Facebook</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Referral" value="Instagram"> Instagram</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Referral" value="Google"> Google</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Referral" value="Our Website"> Our Website</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Referral" value="Ambassador" checked> Ambassador</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Referral" value="WhatsApp/SMS"> WhatsApp/SMS</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Referral" value="Email"> Email</label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Name of Ambassador</label>
+                            <input type="text" name="Ambassador_Name" class="w-full p-3 border border-slate-300 rounded-lg text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2 fee-question-label">How do you plan on paying this registration cost? <span class="text-red-500">*</span></label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Payment_Plan" value="Myself" required> I can pay the fee myself</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Payment_Plan" value="Parents"> My Parents can afford to pay for me</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Payment_Plan" value="Sponsor"> I will look for a sponsor to fund me</label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">How much are you willing to invest in yourself for an opportunity like this?</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Investment_Budget" value="$0-$99"> $0 - $99</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Investment_Budget" value="$99-$299"> $99 - $299</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Investment_Budget" value="$300-$699"> $300 - $699</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Investment_Budget" value="$700-$1499"> $700 - $1499</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Investment_Budget" value="$1500-$3000"> $1500 - $3000</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Investment_Budget" value="$3000-$5000"> $3000 - $5000</label>
+                            </div>
+                        </div>
+                        <div class="flex justify-between pt-4">
+                            <button type="button" onclick="prevStep(2)" class="rounded-xl bg-gray-200 px-8 py-3 text-sm font-bold text-gray-700 hover:bg-gray-300 cursor-pointer">PREVIOUS</button>
+                            <button type="button" onclick="nextStep(2)" class="rounded-xl bg-[#1a3a6b] px-8 py-3 text-sm font-bold text-white hover:bg-[#0d2647] cursor-pointer">NEXT</button>
+                        </div>
+                    </div>
+                    <div class="form-step space-y-6 hidden" data-step="3">
+                        <h3 class="text-base font-bold text-gray-900 border-l-4 border-[#1a3a6b] pl-3 uppercase">Previous Experience</h3>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Have you attended a Best Politicians Conference before? <span class="text-red-500">*</span></label>
+                            <div class="flex gap-6">
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Attended_Before" value="Yes" required> Yes</label>
+                                <label class="flex items-center gap-2 text-sm"><input type="radio" name="Attended_Before" value="No"> No</label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1 motivation-label">Why do you want to participate in this Conference? (150 - 250 words) <span class="text-red-500">*</span></label>
+                            <textarea name="Motivation" rows="5" required placeholder="Write your statement here..." class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1a3a6b] outline-none"></textarea>
+                        </div>
+                        <div class="border-t border-slate-200 pt-4 space-y-3">
+                            <h3 class="text-base font-bold text-gray-900 uppercase">Declarations</h3>
+                            <label class="flex items-start gap-2 text-sm">
+                                <input type="checkbox" name="Declaration_1" required class="mt-1">
+                                <span>I declare that all the information provided above is accurate and truthful. <span class="text-red-500">*</span></span>
+                            </label>
+                            <label class="flex items-start gap-2 text-sm">
+                                <input type="checkbox" name="Declaration_2" required class="mt-1">
+                                <span>I agree to the Terms and Conditions and Privacy Policy of Best Politicians. <span class="text-red-500">*</span></span>
+                            </label>
+                        </div>
+                        <div class="flex justify-between pt-4">
+                            <button type="button" onclick="prevStep(3)" class="rounded-xl bg-gray-200 px-8 py-3 text-sm font-bold text-gray-700 hover:bg-gray-300 cursor-pointer">PREVIOUS</button>
+                            <button type="submit" class="rounded-xl bg-green-600 px-8 py-3 text-sm font-bold text-white hover:bg-green-700 cursor-pointer shadow-lg">SUBMIT</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <footer class="bg-[#1a3a6b] text-white" role="contentinfo">
+        <div class="border-b border-blue-900/50">
+            <div class="mx-auto max-w-[1070px] px-4 py-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                    <div>
+                        <div class="flex items-start justify-between">
+                            <h3 class="text-lg font-semibold">Texas <span class="text-sm font-medium text-gray-200">(Regional Office)</span></h3>
+                            <img width="56" height="34" class="h-[34px] w-[56px] object-contain" alt="" src="assets/images/fan.png" loading="lazy" aria-hidden="true">
+                        </div>
+                        <p class="mt-3 text-sm text-gray-200">11811 North Fwy, Suite 218, Houston, TX 77060, United States</p>
+                    </div>
+                    <div>
+                        <div class="flex items-start justify-between">
+                            <h3 class="text-lg font-semibold">Dubai <span class="text-sm font-medium text-gray-200">(Global Delivery Center)</span></h3>
+                            <img width="68" height="34" class="h-[34px] w-[68px] object-contain" alt="" src="assets/images/fan.png" loading="lazy" aria-hidden="true">
+                        </div>
+                        <p class="mt-3 text-sm text-gray-200">Office # 504-724, Al Muraqabat Deira, Dubai, United Arab Emirates</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mx-auto max-w-[1120px] px-4 py-12">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+                <div>
+                    <a href="https://bestpoliticians.org/" class="block">
+                        <img width="300" height="89" class="h-[47px] w-[185px] object-contain" alt="Best Politicians logo" src="assets/images/logo1.png" loading="lazy">
+                    </a>
+                    <p class="mt-4 max-w-[245px] text-sm leading-[26px] text-gray-200">
+                        Best Politicians is a dynamic organization which transforms individuals, teams and organizations into World Class Diplomats, Expert Negotiators and Visionary Leaders.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-xl font-semibold">Quick Links</h4>
+                    <div class="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                        <a href="https://bestpoliticians.org/" class="flex items-center gap-2 text-gray-200 hover:text-white transition-colors">
+                            <iconify-icon icon="lucide:chevron-right" class="text-white text-sm"></iconify-icon> Home
+                        </a>
+                        <a href="https://bestpoliticians.org/who-we-are/" class="flex items-center gap-2 text-gray-200 hover:text-white transition-colors">
+                            <iconify-icon icon="lucide:chevron-right" class="text-white text-sm"></iconify-icon> Who We Are
+                        </a>
+                        <a href="https://bestpoliticians.org/what-we-do/" class="flex items-center gap-2 text-gray-200 hover:text-white transition-colors">
+                            <iconify-icon icon="lucide:chevron-right" class="text-white text-sm"></iconify-icon> What We Do
+                        </a>
+                        <a href="https://bestpoliticians.org/scholarship-programme/" class="flex items-center gap-2 text-gray-200 hover:text-white transition-colors">
+                            <iconify-icon icon="lucide:chevron-right" class="text-white text-sm"></iconify-icon> Scholarship
+                        </a>
+                        <a href="https://bestpoliticians.org/contact/" class="flex items-center gap-2 text-gray-200 hover:text-white transition-colors">
+                            <iconify-icon icon="lucide:chevron-right" class="text-white text-sm"></iconify-icon> Contact Us
+                        </a>
+                        <a href="https://bestpoliticians.org/register/" class="flex items-center gap-2 text-gray-200 hover:text-white transition-colors">
+                            <iconify-icon icon="lucide:chevron-right" class="text-white text-sm"></iconify-icon> Register Now
+                        </a>
+                        <a href="https://bestpoliticians.org/payment/" class="flex items-center gap-2 text-gray-200 hover:text-white transition-colors">
+                            <iconify-icon icon="lucide:chevron-right" class="text-white text-sm"></iconify-icon> Payment
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-xl font-semibold">Destinations</h4>
+                    <div class="mt-4 space-y-2 text-sm">
+                        <a href="#" class="flex items-center gap-2 text-gray-200 hover:text-white transition-colors">
+                            <iconify-icon icon="lucide:chevron-right" class="text-white text-sm"></iconify-icon> KUALA LUMPUR
+                        </a>
+                        <a href="#" class="flex items-center gap-2 text-gray-200 hover:text-white transition-colors">
+                            <iconify-icon icon="lucide:chevron-right" class="text-white text-sm"></iconify-icon> BUCHAREST , ROMANIA
+                        </a>
+                        <a href="#" class="flex items-center gap-2 text-gray-200 hover:text-white transition-colors">
+                            <iconify-icon icon="lucide:chevron-right" class="text-white text-sm"></iconify-icon> BRUSSEL, BELGIUM
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-xl font-semibold">Let's Have A Word</h4>
+                    <div class="mt-4 space-y-4 text-sm">
+                        <a href="mailto:info@bestpoliticians.org" class="flex items-center gap-3 text-gray-200 hover:text-white transition-colors">
+                            <iconify-icon icon="lucide:mail" class="text-white text-xl"></iconify-icon> info@bestpoliticians.org
+                        </a>
+                        <a href="tel:+12128665269" class="flex items-center gap-3 text-gray-200 hover:text-white transition-colors">
+                            <iconify-icon icon="lucide:smartphone" class="text-white text-xl"></iconify-icon> +1 (212) 866 5269
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 pt-6 border-t border-blue-900/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-gray-200">
+                    &copy; 2026. All Rights Reserved | <a href="https://bestpoliticians.org/privacypolicy/" class="hover:text-white transition-colors">Privacy Policy</a>
+                </p>
+                <div class="flex items-center gap-3">
+                    <a href="https://www.facebook.com/bestpoliticians" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="flex size-10 items-center justify-center rounded-full bg-blue-900/60 text-gray-200 hover:bg-white hover:text-[#1a3a6b] transition-colors">
+                        <iconify-icon icon="fa6-brands:facebook-f" class="text-lg"></iconify-icon>
+                    </a>
+                    <a href="https://www.instagram.com/bestpoliticians" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="flex size-10 items-center justify-center rounded-full bg-blue-900/60 text-gray-200 hover:bg-white hover:text-[#1a3a6b] transition-colors">
+                        <iconify-icon icon="fa6-brands:instagram" class="text-lg"></iconify-icon>
+                    </a>
+                    <a href="https://twitter.com/bestpoliticians" target="_blank" rel="noopener noreferrer" aria-label="Twitter" class="flex size-10 items-center justify-center rounded-full bg-blue-900/60 text-gray-200 hover:bg-white hover:text-[#1a3a6b] transition-colors">
+                        <iconify-icon icon="fa6-brands:twitter" class="text-lg"></iconify-icon>
+                    </a>
+                    <a href="https://www.linkedin.com/company/bestpoliticians" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="flex size-10 items-center justify-center rounded-full bg-blue-900/60 text-gray-200 hover:bg-white hover:text-[#1a3a6b] transition-colors">
+                        <iconify-icon icon="fa6-brands:linkedin-in" class="text-lg"></iconify-icon>
+                    </a>
+                    <a href="https://www.tiktok.com/@bestpoliticians" target="_blank" rel="noopener noreferrer" aria-label="TikTok" class="flex size-10 items-center justify-center rounded-full bg-blue-900/60 text-gray-200 hover:bg-white hover:text-[#1a3a6b] transition-colors">
+                        <iconify-icon icon="fa6-brands:tiktok" class="text-lg"></iconify-icon>
+                    </a>
+                    <a href="https://www.youtube.com/@BestDiplomats" target="_blank" rel="noopener noreferrer" aria-label="YouTube" class="flex size-10 items-center justify-center rounded-full bg-blue-900/60 text-gray-200 hover:bg-white hover:text-[#1a3a6b] transition-colors">
+                        <iconify-icon icon="fa6-brands:youtube" class="text-lg"></iconify-icon>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.11.2/build/js/intlTelInput.min.js"></script>
+    <script>
+        let currentStep = 1;
+        // Initialize Intl Tel Input for Phone and WhatsApp
+        const phoneInput = document.querySelector("#phone");
+        const itiPhone = window.intlTelInput(phoneInput, {
+            initialCountry: "ng",
+            separateDialCode: true,
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@25.11.2/build/js/utils.js",
+        });
+        const whatsappInput = document.querySelector("#whatsapp");
+        const itiWhatsapp = window.intlTelInput(whatsappInput, {
+            initialCountry: "ng",
+            separateDialCode: true,
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@25.11.2/build/js/utils.js",
+        });
+        // Function called when user clicks "Register Now" on a card
+        function selectDestination(location, date) {
+            document.getElementById('cards-view').classList.add('hidden');
+            document.getElementById('form-view').classList.remove('hidden');
+            // Update UI text
+            document.getElementById('display-location').innerText = location;
+            document.getElementById('display-date').innerText = date;
+            // Update Hidden Input fields for Email Submission
+            document.getElementById('input-destination').value = `${location} (${date})`;
+            document.getElementById('email-subject').value = `New Registration for ${location} - ${date}`;
+            // Update dynamic question text inside steps
+            document.querySelector('.fee-question-label').innerText = `The Best Politicians ${location} Conference has a registration fee. How do you plan on paying this registration cost? *`;
+            document.querySelector('.motivation-label').innerText = `Why do you want to participate in the Best Politicians ${location} Conference? (150 - 250 words) *`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        // Keep the country code in the phone numbers when the form is submitted
+        document.getElementById('multistep-form').addEventListener('submit', function () {
+            phoneInput.value = itiPhone.getNumber() || phoneInput.value;
+            if (whatsappInput.value) whatsappInput.value = itiWhatsapp.getNumber() || whatsappInput.value;
+        });
+        function showCardsView() {
+            document.getElementById('form-view').classList.add('hidden');
+            document.getElementById('cards-view').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        // Multi-Step Form Navigation Logic
+        function nextStep(step) {
+            const currentStepEl = document.querySelector(`.form-step[data-step="${step}"]`);
+            // Simple validation check before advancing
+            const inputs = currentStepEl.querySelectorAll('input[required], select[required], textarea[required]');
+            let isValid = true;
+            inputs.forEach(input => {
+                if (!input.value) {
+                    isValid = false;
+                    input.classList.add('border-red-500');
+                } else {
+                    input.classList.remove('border-red-500');
+                }
+            });
+            if (!isValid) {
+                alert('Please fill out all required fields before proceeding.');
+                return;
+            }
+            currentStep = step + 1;
+            updateStepView();
+        }
+        function prevStep(step) {
+            currentStep = step - 1;
+            updateStepView();
+        }
+        function updateStepView() {
+            document.querySelectorAll('.form-step').forEach(el => el.classList.add('hidden'));
+            document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('hidden');
+            let progress = '33%';
+            if (currentStep === 2) progress = '66%';
+            if (currentStep === 3) progress = '100%';
+            document.getElementById('step-indicator').innerText = `Step ${currentStep} of 3`;
+            document.getElementById('progress-text').innerText = progress;
+            document.getElementById('progress-bar').style.width = progress;
+            window.scrollTo({ top: 100, behavior: 'smooth' });
+        }
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
