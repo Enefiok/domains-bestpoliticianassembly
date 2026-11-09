@@ -123,7 +123,10 @@ function buildApplicantEmail(array $d): string
         <p style="margin:0 0 16px;font-weight:bold;">Please wait for further information through email or Social media handles of <?= $brand ?>.</p>
         <p style="margin:0 0 12px;">More Details : <a href="<?= h($d['site_url']) ?>" style="color:#0b5bd3;font-weight:bold;"><?= h($d['site_url']) ?></a></p>
         <p style="margin:0 0 12px;">Facebook : <a href="<?= h($d['facebook']) ?>" style="color:#0b5bd3;font-weight:bold;">BestPoliticians</a></p>
-        <p style="margin:0 0 16px;">Instagram : <a href="<?= h($d['instagram']) ?>" style="color:#0b5bd3;font-weight:bold;">@BestPoliticians</a></p>
+        <p style="margin:0 0 12px;">Instagram : <a href="<?= h($d['instagram']) ?>" style="color:#0b5bd3;font-weight:bold;">@BestPoliticians</a></p>
+        <?php if (!empty($d['tiktok'])): ?>
+        <p style="margin:0 0 16px;">TikTok : <a href="<?= h($d['tiktok']) ?>" style="color:#0b5bd3;font-weight:bold;">@BestPoliticians</a></p>
+        <?php endif; ?>
         <p style="margin:0 0 16px;">Should you have any questions, feel free to reach us out at<br><a href="mailto:<?= h($d['contact_email']) ?>" style="color:#0b5bd3;font-weight:bold;"><?= h($d['contact_email']) ?></a> We will be happy to assist you.</p>
         <p style="margin:0 0 16px;font-weight:bold;">We look forward to meeting you in <?= $location ?>!</p>
         <p style="margin:0;">Once again, thank you for registering yourself as a part of this powerful Diplomatic Conference!</p>
@@ -221,7 +224,10 @@ function buildApprovalEmail(array $d): string
       <tr><td align="center" style="padding:20px 20px 28px;font-size:14px;line-height:1.7;">
         <p style="margin:0 0 12px;">More Details : <a href="<?= h($d['site_url']) ?>" style="color:#0b5bd3;font-weight:bold;"><?= h($d['site_url']) ?></a></p>
         <p style="margin:0 0 12px;">Facebook : <a href="<?= h($d['facebook']) ?>" style="color:#0b5bd3;font-weight:bold;">BestPoliticians</a></p>
-        <p style="margin:0 0 16px;">Instagram : <a href="<?= h($d['instagram']) ?>" style="color:#0b5bd3;font-weight:bold;">@BestPoliticians</a></p>
+        <p style="margin:0 0 12px;">Instagram : <a href="<?= h($d['instagram']) ?>" style="color:#0b5bd3;font-weight:bold;">@BestPoliticians</a></p>
+        <?php if (!empty($d['tiktok'])): ?>
+        <p style="margin:0 0 16px;">TikTok : <a href="<?= h($d['tiktok']) ?>" style="color:#0b5bd3;font-weight:bold;">@BestPoliticians</a></p>
+        <?php endif; ?>
         <p style="margin:0 0 16px;">Should you have any questions, feel free to reach us out at<br><a href="mailto:<?= h($d['contact_email']) ?>" style="color:#0b5bd3;font-weight:bold;"><?= h($d['contact_email']) ?></a> We will be happy to assist you.</p>
         <p style="margin:0;font-weight:bold;">We look forward to meeting you in <?= $location ?>!</p>
       </td></tr>
