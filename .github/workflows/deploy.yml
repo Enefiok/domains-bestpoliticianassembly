@@ -16,7 +16,7 @@ jobs:
       - name: Sync files to Hostinger
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
+          server: 217.65.157.75
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: /domains/bestpoliticianassembly.org/public_html/
