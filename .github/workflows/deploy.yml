@@ -13,7 +13,13 @@ jobs:
       - name: Get latest code
         uses: actions/checkout@v4
 
+      - name: Show FTP root
+        run: |
+          echo "--- FTP root listing ---"
+          curl -s --list-only --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" ftp://217.65.157.75/
+
       - name: Sync files to Hostinger
+        if: false
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: 217.65.157.75
