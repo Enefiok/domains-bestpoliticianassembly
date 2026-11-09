@@ -1,37 +1,14 @@
 <?php
 declare(strict_types=1);
 
-use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 define('APP_MAIL', true);
 
-require __DIR__ . '/phpmailer/Exception.php';
-require __DIR__ . '/phpmailer/PHPMailer.php';
-require __DIR__ . '/phpmailer/SMTP.php';
+require __DIR__ . '/lib.php';
 require __DIR__ . '/email-template.php';
 
 /* ---------- helpers ---------- */
-
-// Reads the .env file (KEY=value per line, # for comments)
-function loadEnv(string $path): array
-{
-    $vars = [];
-    if (!is_readable($path)) {
-        return $vars;
-    }
-    foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
-        $line = trim($line);
-        if ($line === '' || $line[0] === '#') {
-            continue;
-        }
-        $parts = explode('=', $line, 2);
-        if (count($parts) === 2) {
-            $vars[trim($parts[0])] = trim(trim($parts[1]), "\"'");
-        }
-    }
-    return $vars;
-}
 
 function field(string $key): string
 {
@@ -50,23 +27,6 @@ function fail(string $message): void
     exit;
 }
 
-function makeMailer(array $env): PHPMailer
-{
-    $m = new PHPMailer(true);
-    $m->isSMTP();
-    $m->Host       = $env['SMTP_HOST'];
-    $m->SMTPAuth   = true;
-    $m->Username   = $env['SMTP_USER'];
-    $m->Password   = $env['SMTP_PASS'];
-    $port          = (int)($env['SMTP_PORT'] ?? 465);
-    $m->SMTPSecure = $port === 587 ? PHPMailer::ENCRYPTION_STARTTLS : PHPMailer::ENCRYPTION_SMTPS;
-    $m->Port       = $port;
-    $m->CharSet    = 'UTF-8';
-    $m->isHTML(true);
-    $m->setFrom($env['SMTP_USER'], $env['MAIL_FROM_NAME'] ?? 'Best Politicians');
-    return $m;
-}
-
 /* ---------- only accept form submissions ---------- */
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -82,7 +42,7 @@ if (field('website') !== '') {
 
 /* ---------- load secrets from .env (kept OUTSIDE public_html) ---------- */
 
-$env = loadEnv(dirname(__DIR__) . '/.env');
+$env = loadEnv(envPath());
 foreach (['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS', 'ADMIN_EMAIL', 'SITE_URL'] as $required) {
     if (empty($env[$required])) {
         error_log("send-email.php: missing $required in .env");
@@ -109,13 +69,38 @@ if (preg_match('/^(.*)\s\((.*)\)$/', $destination, $m)) {
     $eventDate = trim($m[2]);
 }
 
-/* ---------- 1) copy of the full registration to the organizers ---------- */
+/* ---------- 0) save the registration (status = pending) ---------- */
 
-$rows = '';
+// Every form field, so nothing is lost
+$details = [];
 foreach ($_POST as $key => $value) {
     if (!is_string($value) || in_array($key, ['website', 'access_key', 'subject'], true)) {
         continue;
     }
+    $details[$key] = mb_substr(trim($value), 0, 3000);
+}
+
+$saved = false;
+try {
+    $pdo  = getDb($env);
+    $json = json_encode($details, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '{}';
+    // Same email + same destination twice = one row (details refreshed, timer NOT restarted)
+    $stmt = $pdo->prepare(
+        'INSERT INTO registrations (first_name, last_name, email, country, location, event_date, details)
+         VALUES (?, ?, ?, ?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE details = ?'
+    );
+    $stmt->execute([$firstName, $lastName, $email, field('Country'), $location, $eventDate, $json, $json]);
+    $saved = true;
+} catch (Throwable $e) {
+    // Don't lose the registration: the organizers still get the email below.
+    error_log('send-email.php (database): ' . $e->getMessage());
+}
+
+/* ---------- 1) copy of the full registration to the organizers ---------- */
+
+$rows = '';
+foreach ($details as $key => $value) {
     $rows .= '<tr><td style="padding:6px 10px;border:1px solid #ddd;background:#f5f8fc;font-weight:bold;">'
            . h(str_replace('_', ' ', $key)) . '</td><td style="padding:6px 10px;border:1px solid #ddd;">'
            . nl2br(h($value)) . '</td></tr>';
@@ -125,8 +110,9 @@ try {
     $admin = makeMailer($env);
     $admin->addAddress($env['ADMIN_EMAIL']);
     $admin->addReplyTo($email, "$firstName $lastName");
-    $admin->Subject = "New Registration: $firstName $lastName - $location";
+    $admin->Subject = ($saved ? '' : '[NOT SAVED TO DATABASE] ') . "New Registration: $firstName $lastName - $location";
     $admin->Body    = '<h2 style="font-family:Arial,sans-serif;">New registration received</h2>'
+                    . ($saved ? '' : '<p style="color:#b00020;font-family:Arial,sans-serif;"><strong>This registration could not be saved to the database, so it will NOT get the automatic approval email.</strong></p>')
                     . '<table style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px;">' . $rows . '</table>';
     $admin->AltBody = "New registration from $firstName $lastName ($email) for $destination. Open this email in HTML to see all details.";
     $admin->send();
@@ -135,24 +121,12 @@ try {
     fail('We could not submit your registration right now. Please try again in a few minutes.');
 }
 
-/* ---------- 2) confirmation email to the applicant (the template) ---------- */
+/* ---------- 2) "Application Under Review" email to the applicant ---------- */
 
 try {
-    $site = rtrim($env['SITE_URL'], '/');
-
-    $html = buildApplicantEmail([
-        'brand'         => $env['BRAND_NAME'] ?? 'Best Politicians',
-        'name'          => "$firstName $lastName",
-        'country'       => field('Country'),
-        'location'      => $location,
-        'date'          => $eventDate,
-        'logo_url'      => $site . '/assets/images/best%20logo.png',
-        'site_url'      => $site,
-        'twibbon_url'   => $env['TWIBBON_URL'] ?? '#',
-        'contact_email' => $env['CONTACT_EMAIL'] ?? $env['SMTP_USER'],
-        'facebook'      => $env['FACEBOOK_URL'] ?? 'https://www.facebook.com/bestpoliticians',
-        'instagram'     => $env['INSTAGRAM_URL'] ?? 'https://www.instagram.com/bestpoliticians',
-    ]);
+    $html = buildApplicantEmail(
+        emailData($env, "$firstName $lastName", field('Country'), $location, $eventDate)
+    );
 
     $user = makeMailer($env);
     $user->addAddress($email, "$firstName $lastName");
