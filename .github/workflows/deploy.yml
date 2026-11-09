@@ -19,6 +19,6 @@ jobs:
           server: 217.65.157.75
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /public_html/
+          server-dir: ./
           port: 21
           timeout: 10000
