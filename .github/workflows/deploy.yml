@@ -21,3 +21,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: /domains/bestpoliticianassembly.org/public_html/
           port: 21
+          timeout: 10000
