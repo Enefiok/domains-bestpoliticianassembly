@@ -1,87 +1,136 @@
 <?php
-declare(strict_types=1);
-
-// Opened from the "Download your Itinerary" button in the approval email.
-// The link looks like: https://yoursite.org/itinerary.php?t=<32 letters and numbers>
-
-define('APP_MAIL', true);
-
-require __DIR__ . '/lib.php';
-require __DIR__ . '/itinerary-template.php';
-
-function notFound(): void
-{
-    http_response_code(404);
-    echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
-       . '<title>Itinerary not found</title></head>'
-       . '<body style="font-family:Arial,sans-serif;text-align:center;padding:60px 20px;">'
-       . '<h2>Itinerary not found</h2><p>This link is not valid. Please use the button in your approval email, '
-       . 'or contact the organizers.</p></body></html>';
+// Blocks anyone from opening this file directly in a browser
+if (!defined('APP_MAIL')) {
+    http_response_code(403);
     exit;
 }
 
-// Never let search engines or caches keep a personal page
-header('X-Robots-Tag: noindex, nofollow');
-header('Cache-Control: no-store');
-
-$token = $_GET['t'] ?? '';
-if (!is_string($token) || !preg_match('/^[a-f0-9]{32}$/', $token)) {
-    notFound();
+if (!defined('BP_NAVY')) {
+    define('BP_NAVY', '#00005F');
 }
 
-$env = loadEnv(envPath());
-if (empty($env['SITE_URL'])) {
-    error_log('itinerary.php: missing SITE_URL in .env');
-    notFound();
-}
-
-try {
-    $pdo  = getDb($env);
-    $stmt = $pdo->prepare("SELECT first_name, last_name, country, location, event_date
-                           FROM registrations
-                           WHERE itinerary_token = ? AND status = 'approved'
-                           LIMIT 1");
-    $stmt->execute([$token]);
-    $r = $stmt->fetch();
-} catch (Throwable $e) {
-    error_log('itinerary.php: ' . $e->getMessage());
-    notFound();
-}
-
-if (!$r) {
-    notFound();
-}
-
-$fullName = trim($r['first_name'] . ' ' . $r['last_name']);
-$d    = emailData($env, $fullName, (string)$r['country'], (string)$r['location'], (string)$r['event_date']);
-$html = buildItineraryHtml($d);
-
-// If the Dompdf library is installed, send a real PDF.
-// If not, show the itinerary as a normal page (the person can still print or save it as PDF).
-$autoload = null;
-foreach ([__DIR__ . '/vendor/autoload.php', dirname(__DIR__) . '/vendor/autoload.php'] as $candidate) {
-    if (is_readable($candidate)) {
-        $autoload = $candidate;
-        break;
+if (!function_exists('h')) {
+    function h($s): string
+    {
+        return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
     }
 }
 
-if ($autoload !== null) {
-    try {
-        require $autoload;
-        $options = new \Dompdf\Options();
-        $options->set('isRemoteEnabled', true); // lets the PDF load the logo from your site
-        $dompdf = new \Dompdf\Dompdf($options);
-        $dompdf->loadHtml($html, 'UTF-8');
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-        $dompdf->stream('Conference-Itinerary.pdf', ['Attachment' => true]);
-        exit;
-    } catch (Throwable $e) {
-        error_log('itinerary.php (pdf): ' . $e->getMessage());
-        // fall through to the plain page below
-    }
+/*
+ * The conference programme. Edit this list for each event.
+ * Each day has a title, a date, and rows of [time, activity].
+ * TODO: replace the sample rows with the real programme from your boss.
+ */
+function defaultItineraryProgram(): array
+{
+    return [
+        [
+            'title' => 'DAY 1',
+            'date'  => 'DATE TO BE CONFIRMED',
+            'rows'  => [
+                ['09:00', 'Registration'],
+                ['10:00', 'Opening session'],
+                ['12:00', 'Break'],
+                ['13:00', 'Session to be confirmed'],
+            ],
+        ],
+        [
+            'title' => 'DAY 2',
+            'date'  => 'DATE TO BE CONFIRMED',
+            'rows'  => [
+                ['09:00', 'Session to be confirmed'],
+                ['12:00', 'Break'],
+                ['13:00', 'Session to be confirmed'],
+                ['17:00', 'Closing'],
+            ],
+        ],
+    ];
 }
 
-header('Content-Type: text/html; charset=UTF-8');
-echo $html;
+/*
+ * Builds the itinerary page as HTML, with the company letterhead.
+ * $d needs: brand, name, location, date, logo_url, site_url
+ * $program is optional; it defaults to the list above.
+ * Uses simple tables and fixed bands so it also converts cleanly to PDF
+ * (for example with Dompdf).
+ */
+function buildItineraryHtml(array $d, ?array $program = null): string
+{
+    $program = $program ?? defaultItineraryProgram();
+    $navy    = BP_NAVY;
+
+    $brand    = h($d['brand']);
+    $name     = h($d['name']);
+    $location = h($d['location']);
+    $date     = h($d['date']);
+    $logo     = h($d['logo_url']);
+    $site     = h($d['site_url']);
+
+    ob_start();
+    ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Conference Itinerary</title>
+<style>
+  @page { margin: 0; }
+  body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #111111; font-size: 13px; }
+  .band-top { background: <?= $navy ?>; color: #ffffff; text-align: center; padding: 22px 0 18px; }
+  .band-top img { height: 90px; }
+  .band-top .title { font-size: 24px; font-weight: bold; letter-spacing: 2px; margin-top: 10px; }
+  .band-top .rule { width: 340px; height: 2px; background: #ffffff; margin: 10px auto 0; }
+  .band-bottom { background: <?= $navy ?>; color: #ffffff; text-align: center; padding: 18px 0; font-size: 12px; }
+  .content { padding: 28px 48px 40px; }
+  h2 { color: <?= $navy ?>; font-size: 18px; margin: 0 0 4px; text-align: center; }
+  .sub { text-align: center; margin: 0 0 18px; }
+  .who { margin: 0 0 22px; line-height: 1.7; }
+  .day { margin: 0 0 6px; font-weight: bold; color: <?= $navy ?>; font-size: 14px; }
+  table.prog { width: 100%; border-collapse: collapse; margin: 0 0 22px; }
+  table.prog td { border: 1px solid <?= $navy ?>; padding: 8px 10px; vertical-align: top; }
+  table.prog td.time { width: 90px; font-weight: bold; }
+  table.prog tr.head td { background: <?= $navy ?>; color: #ffffff; font-weight: bold; }
+</style>
+</head>
+<body>
+
+  <div class="band-top">
+    <img src="<?= $logo ?>" alt="<?= $brand ?>">
+    <div class="title"><?= strtoupper($brand) ?></div>
+    <div class="rule"></div>
+  </div>
+
+  <div class="content">
+    <h2>CONFERENCE ITINERARY</h2>
+    <p class="sub"><?= $brand ?> Conference &middot; <?= $location ?> &middot; <?= $date ?></p>
+
+    <p class="who">
+      <strong>PREPARED FOR:</strong> <?= $name ?><br>
+      <strong>EVENT:</strong> <?= $brand ?> Conference<br>
+      <strong>LOCATION:</strong> <?= $location ?><br>
+      <strong>DATES:</strong> <?= $date ?>
+    </p>
+
+    <?php foreach ($program as $day): ?>
+      <p class="day"><?= h($day['title']) ?> &mdash; <?= h($day['date']) ?></p>
+      <table class="prog">
+        <tr class="head"><td class="time">TIME</td><td>ACTIVITY</td></tr>
+        <?php foreach ($day['rows'] as $row): ?>
+        <tr>
+          <td class="time"><?= h($row[0]) ?></td>
+          <td><?= h($row[1]) ?></td>
+        </tr>
+        <?php endforeach; ?>
+      </table>
+    <?php endforeach; ?>
+  </div>
+
+  <div class="band-bottom">
+    <?= $site ?>
+  </div>
+
+</body>
+</html>
+    <?php
+    return (string)ob_get_clean();
+}
