@@ -5,6 +5,13 @@ if (!defined('APP_MAIL')) {
     exit;
 }
 
+// ===== COMPANY COLOR (change it here and both emails update) =====
+// Deep blue taken from the Best Politician Assembly letterhead.
+if (!defined('BP_NAVY')) {
+    define('BP_NAVY', '#00005F');
+}
+// =================================================================
+
 function h($s): string
 {
     return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
@@ -30,8 +37,8 @@ function paymentSectionHtml(string $table): string
     ob_start();
     ?>
       <tr><td align="center" style="padding:20px 20px 10px;">
-        <p style="margin:0 0 14px;font-family:'Times New Roman',serif;font-size:17px;font-weight:bold;color:#0b5bd3;">PLEASE TAKE A LOOK AT THE INFORMATION BELOW:</p>
-        <p style="margin:0 0 18px;font-family:'Times New Roman',serif;font-size:17px;font-weight:bold;color:#0b5bd3;">TYPE OF PAYMENT</p>
+        <p style="margin:0 0 14px;font-family:'Times New Roman',serif;font-size:17px;font-weight:bold;color:<?= $table ?>;">PLEASE TAKE A LOOK AT THE INFORMATION BELOW:</p>
+        <p style="margin:0 0 18px;font-family:'Times New Roman',serif;font-size:17px;font-weight:bold;color:<?= $table ?>;">TYPE OF PAYMENT</p>
         <p style="margin:0;font-size:18px;font-weight:bold;color:<?= $table ?>;">EARLY BIRD</p>
         <p style="margin:0 0 10px;font-size:15px;font-weight:bold;color:<?= $table ?>;">FULL PAYMENT METHOD</p>
 
@@ -75,8 +82,9 @@ function paymentSectionHtml(string $table): string
 function buildApplicantEmail(array $d): string
 {
     // ===== EASY SETTINGS =====
-    $accent = '#418DDF';   // header / footer blue
-    $table  = '#5B8BD6';   // payment table blue
+    $accent = BP_NAVY;   // header / footer
+    $table  = BP_NAVY;   // payment tables, headings
+    $link   = BP_NAVY;   // links
     // =========================
 
     $brand    = h($d['brand']);
@@ -104,7 +112,7 @@ function buildApplicantEmail(array $d): string
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-radius:12px;overflow:hidden;background:#ffffff;">
 
       <!-- Header -->
-      <tr><td align="center" style="background:<?= $accent ?>;padding:30px 20px;">
+      <tr><td align="center" bgcolor="<?= $accent ?>" style="background:<?= $accent ?>;padding:30px 20px;">
         <img src="<?= h($d['logo_url']) ?>" alt="<?= $brand ?>" width="240" style="display:block;max-width:240px;height:auto;border:0;margin:0 auto 14px;">
         <h1 style="margin:0;font-size:26px;color:#ffffff;font-weight:bold;">Application Under Review!</h1>
       </td></tr>
@@ -121,19 +129,19 @@ function buildApplicantEmail(array $d): string
       <!-- Closing -->
       <tr><td align="center" style="padding:20px 20px 28px;font-size:14px;line-height:1.7;">
         <p style="margin:0 0 16px;font-weight:bold;">Please wait for further information through email or Social media handles of <?= $brand ?>.</p>
-        <p style="margin:0 0 12px;">More Details : <a href="<?= h($d['site_url']) ?>" style="color:#0b5bd3;font-weight:bold;"><?= h($d['site_url']) ?></a></p>
-        <p style="margin:0 0 12px;">Facebook : <a href="<?= h($d['facebook']) ?>" style="color:#0b5bd3;font-weight:bold;">BestPoliticians</a></p>
-        <p style="margin:0 0 12px;">Instagram : <a href="<?= h($d['instagram']) ?>" style="color:#0b5bd3;font-weight:bold;">@BestPoliticians</a></p>
+        <p style="margin:0 0 12px;">More Details : <a href="<?= h($d['site_url']) ?>" style="color:<?= $link ?>;font-weight:bold;"><?= h($d['site_url']) ?></a></p>
+        <p style="margin:0 0 12px;">Facebook : <a href="<?= h($d['facebook']) ?>" style="color:<?= $link ?>;font-weight:bold;">BestPoliticians</a></p>
+        <p style="margin:0 0 12px;">Instagram : <a href="<?= h($d['instagram']) ?>" style="color:<?= $link ?>;font-weight:bold;">@BestPoliticians</a></p>
         <?php if (!empty($d['tiktok'])): ?>
-        <p style="margin:0 0 16px;">TikTok : <a href="<?= h($d['tiktok']) ?>" style="color:#0b5bd3;font-weight:bold;">@BestPoliticians</a></p>
+        <p style="margin:0 0 16px;">TikTok : <a href="<?= h($d['tiktok']) ?>" style="color:<?= $link ?>;font-weight:bold;">@BestPoliticians</a></p>
         <?php endif; ?>
-        <p style="margin:0 0 16px;">Should you have any questions, feel free to reach us out at<br><a href="mailto:<?= h($d['contact_email']) ?>" style="color:#0b5bd3;font-weight:bold;"><?= h($d['contact_email']) ?></a> We will be happy to assist you.</p>
+        <p style="margin:0 0 16px;">Should you have any questions, feel free to reach us out at<br><a href="mailto:<?= h($d['contact_email']) ?>" style="color:<?= $link ?>;font-weight:bold;"><?= h($d['contact_email']) ?></a> We will be happy to assist you.</p>
         <p style="margin:0 0 16px;font-weight:bold;">We look forward to meeting you in <?= $location ?>!</p>
         <p style="margin:0;">Once again, thank you for registering yourself as a part of this powerful Diplomatic Conference!</p>
       </td></tr>
 
       <!-- Footer -->
-      <tr><td align="center" style="background:<?= $accent ?>;padding:20px;color:#ffffff;">
+      <tr><td align="center" bgcolor="<?= $accent ?>" style="background:<?= $accent ?>;padding:20px;color:#ffffff;">
         <p style="margin:0 0 8px;font-size:11px;font-weight:bold;">© <?= $year ?> <?= $brand ?>. All rights reserved.</p>
         <p style="margin:0;font-size:11px;font-weight:bold;font-style:italic;">“Master Diplomacy, Leadership and Negotiations”</p>
       </td></tr>
@@ -156,8 +164,9 @@ function buildApplicantEmail(array $d): string
 function buildApprovalEmail(array $d): string
 {
     // ===== EASY SETTINGS =====
-    $accent = '#418DDF';
-    $table  = '#5B8BD6';
+    $accent = BP_NAVY;
+    $table  = BP_NAVY;
+    $link   = BP_NAVY;
 
     // TODO: replace these with your real Terms and Conditions wording.
     // These are PLACEHOLDERS so the email has something to show while testing.
@@ -194,7 +203,7 @@ function buildApprovalEmail(array $d): string
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-radius:12px;overflow:hidden;background:#ffffff;">
 
       <!-- Header -->
-      <tr><td align="center" style="background:<?= $accent ?>;padding:30px 20px;">
+      <tr><td align="center" bgcolor="<?= $accent ?>" style="background:<?= $accent ?>;padding:30px 20px;">
         <img src="<?= h($d['logo_url']) ?>" alt="<?= $brand ?>" width="240" style="display:block;max-width:240px;height:auto;border:0;margin:0 auto 14px;">
         <h1 style="margin:0;font-size:26px;color:#ffffff;font-weight:bold;">CONGRATULATIONS!</h1>
       </td></tr>
@@ -217,23 +226,23 @@ function buildApprovalEmail(array $d): string
           <li style="margin:0 0 6px;"><?= h($t) ?></li>
           <?php endforeach; ?>
         </ol>
-        <p style="margin:12px 0 0;">Full terms: <a href="<?= h($d['site_url']) ?>/terms-and-conditions.html" style="color:#0b5bd3;font-weight:bold;"><?= h($d['site_url']) ?>/terms-and-conditions.html</a></p>
+        <p style="margin:12px 0 0;">Full terms: <a href="<?= h($d['site_url']) ?>/terms-and-conditions.html" style="color:<?= $link ?>;font-weight:bold;"><?= h($d['site_url']) ?>/terms-and-conditions.html</a></p>
       </td></tr>
 
       <!-- Closing -->
       <tr><td align="center" style="padding:20px 20px 28px;font-size:14px;line-height:1.7;">
-        <p style="margin:0 0 12px;">More Details : <a href="<?= h($d['site_url']) ?>" style="color:#0b5bd3;font-weight:bold;"><?= h($d['site_url']) ?></a></p>
-        <p style="margin:0 0 12px;">Facebook : <a href="<?= h($d['facebook']) ?>" style="color:#0b5bd3;font-weight:bold;">BestPoliticians</a></p>
-        <p style="margin:0 0 12px;">Instagram : <a href="<?= h($d['instagram']) ?>" style="color:#0b5bd3;font-weight:bold;">@BestPoliticians</a></p>
+        <p style="margin:0 0 12px;">More Details : <a href="<?= h($d['site_url']) ?>" style="color:<?= $link ?>;font-weight:bold;"><?= h($d['site_url']) ?></a></p>
+        <p style="margin:0 0 12px;">Facebook : <a href="<?= h($d['facebook']) ?>" style="color:<?= $link ?>;font-weight:bold;">BestPoliticians</a></p>
+        <p style="margin:0 0 12px;">Instagram : <a href="<?= h($d['instagram']) ?>" style="color:<?= $link ?>;font-weight:bold;">@BestPoliticians</a></p>
         <?php if (!empty($d['tiktok'])): ?>
-        <p style="margin:0 0 16px;">TikTok : <a href="<?= h($d['tiktok']) ?>" style="color:#0b5bd3;font-weight:bold;">@BestPoliticians</a></p>
+        <p style="margin:0 0 16px;">TikTok : <a href="<?= h($d['tiktok']) ?>" style="color:<?= $link ?>;font-weight:bold;">@BestPoliticians</a></p>
         <?php endif; ?>
-        <p style="margin:0 0 16px;">Should you have any questions, feel free to reach us out at<br><a href="mailto:<?= h($d['contact_email']) ?>" style="color:#0b5bd3;font-weight:bold;"><?= h($d['contact_email']) ?></a> We will be happy to assist you.</p>
+        <p style="margin:0 0 16px;">Should you have any questions, feel free to reach us out at<br><a href="mailto:<?= h($d['contact_email']) ?>" style="color:<?= $link ?>;font-weight:bold;"><?= h($d['contact_email']) ?></a> We will be happy to assist you.</p>
         <p style="margin:0;font-weight:bold;">We look forward to meeting you in <?= $location ?>!</p>
       </td></tr>
 
       <!-- Footer -->
-      <tr><td align="center" style="background:<?= $accent ?>;padding:20px;color:#ffffff;">
+      <tr><td align="center" bgcolor="<?= $accent ?>" style="background:<?= $accent ?>;padding:20px;color:#ffffff;">
         <p style="margin:0 0 8px;font-size:11px;font-weight:bold;">© <?= $year ?> <?= $brand ?>. All rights reserved.</p>
         <p style="margin:0;font-size:11px;font-weight:bold;font-style:italic;">“Master Diplomacy, Leadership and Negotiations”</p>
       </td></tr>

@@ -41,6 +41,10 @@ try {
     $revert = $pdo->prepare("UPDATE registrations SET status = 'pending', approved_by = NULL, approved_at = NULL
                              WHERE id = ?");
 
+    // Private itinerary link code. Keeps an existing code, or saves a new one.
+    $saveToken = $pdo->prepare("UPDATE registrations SET itinerary_token = COALESCE(itinerary_token, ?) WHERE id = ?");
+    $getToken  = $pdo->prepare("SELECT itinerary_token FROM registrations WHERE id = ?");
+
     $sent = 0;
     foreach ($due as $r) {
         $claim->execute([$r['id']]);
@@ -50,8 +54,20 @@ try {
 
         try {
             $fullName = trim($r['first_name'] . ' ' . $r['last_name']);
+
+            // Itinerary link. If this step fails (for example the database column
+            // has not been added yet), the email is still sent, just without the button.
+            $token = null;
+            try {
+                $saveToken->execute([makeItineraryToken(), $r['id']]);
+                $getToken->execute([$r['id']]);
+                $token = $getToken->fetchColumn() ?: null;
+            } catch (Throwable $e) {
+                error_log('send_approvals.php (itinerary token, id ' . $r['id'] . '): ' . $e->getMessage());
+            }
+
             $html = buildApprovalEmail(
-                emailData($env, $fullName, $r['country'], $r['location'], $r['event_date'])
+                emailData($env, $fullName, $r['country'], $r['location'], $r['event_date'], $token)
             );
 
             $m = makeMailer($env);

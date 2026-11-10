@@ -51,7 +51,8 @@ function makeMailer(array $env): PHPMailer
     $m->Port       = $port;
     $m->CharSet    = 'UTF-8';
     $m->isHTML(true);
-    $m->setFrom($env['SMTP_USER'], $env['MAIL_FROM_NAME'] ?? 'Best Politicians');
+    // Sender name people see in their inbox. Override with MAIL_FROM_NAME in .env.
+    $m->setFrom($env['SMTP_USER'], $env['MAIL_FROM_NAME'] ?? 'Best Politician Assembly');
     return $m;
 }
 
@@ -70,20 +71,32 @@ function getDb(array $env): PDO
     ]);
 }
 
-// Data both email templates need
-function emailData(array $env, string $name, string $country, string $location, string $date): array
+// A random private code for one person's itinerary link (32 letters/numbers, impossible to guess)
+function makeItineraryToken(): string
+{
+    return bin2hex(random_bytes(16));
+}
+
+// Data both email templates need.
+// $itineraryToken is optional: when given, the approval email shows the "Download your Itinerary" button.
+function emailData(array $env, string $name, string $country, string $location, string $date, ?string $itineraryToken = null): array
 {
     $site = rtrim($env['SITE_URL'], '/');
     return [
-        'brand'         => $env['BRAND_NAME'] ?? 'Best Politicians',
+        'itinerary_url' => $itineraryToken ? $site . '/itinerary.php?t=' . rawurlencode($itineraryToken) : '',
+        'brand'         => $env['BRAND_NAME'] ?? 'Best Politician Assembly',
         'name'          => $name,
         'country'       => $country,
         'location'      => $location,
         'date'          => $date,
-        'logo_url'      => $site . '/assets/images/best%20logo.png',
+        // Deep-blue logo. Override with LOGO_URL in .env if you move or replace it.
+        'logo_url'      => $env['LOGO_URL'] ?? ($site . '/assets/images/logo2.jpeg'),
         'site_url'      => $site,
         'contact_email' => $env['CONTACT_EMAIL'] ?? $env['SMTP_USER'],
-        'facebook'      => $env['FACEBOOK_URL'] ?? 'https://www.facebook.com/bestpoliticians',
-        'instagram'     => $env['INSTAGRAM_URL'] ?? 'https://www.instagram.com/bestpoliticians',
+        // Social links: set FACEBOOK_URL, INSTAGRAM_URL, TIKTOK_URL in .env to change them
+        // without touching code. The values below are only used when .env has no entry.
+        'facebook'      => $env['FACEBOOK_URL'] ?? 'https://www.facebook.com/bestpoliticianassembly.search',
+        'instagram'     => $env['INSTAGRAM_URL'] ?? 'https://www.instagram.com/prec.iousjacob58?psln=NnhhaXl2bDhzMzVi',
+        'tiktok'        => $env['TIKTOK_URL'] ?? 'https://www.tiktok.com/@user8540388832663',
     ];
 }
