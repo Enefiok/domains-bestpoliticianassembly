@@ -92,4 +92,4 @@ try {
     error_log('send_approvals.php: ' . $e->getMessage());
     fwrite(STDERR, 'send_approvals.php error: ' . $e->getMessage() . "\n");
     exit(1);
-}d
+}
