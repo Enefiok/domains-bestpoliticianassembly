@@ -92,6 +92,8 @@ function emailData(array $env, string $name, string $country, string $location, 
         // Deep-blue logo. Override with LOGO_URL in .env if you move or replace it.
         'logo_url'      => $env['LOGO_URL'] ?? ($site . '/assets/images/logo2.jpeg'),
         'site_url'      => $site,
+        // "Do you need a visa" page, used by the "click here" link in the terms. Override with VISA_URL in .env.
+        'visa_url'      => $env['VISA_URL'] ?? ($site . '/get-visa.html'),
         'contact_email' => $env['CONTACT_EMAIL'] ?? $env['SMTP_USER'],
         // Social links: set FACEBOOK_URL, INSTAGRAM_URL, TIKTOK_URL in .env to change them
         // without touching code. The values below are only used when .env has no entry.
