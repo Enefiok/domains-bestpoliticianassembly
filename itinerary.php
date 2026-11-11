@@ -59,7 +59,13 @@ $html = buildItineraryHtml($d);
 // If the Dompdf library is installed, send a real PDF.
 // If not, show the itinerary as a normal page (the person can still print or save it as PDF).
 $autoload = null;
-foreach ([__DIR__ . '/vendor/autoload.php', dirname(__DIR__) . '/vendor/autoload.php'] as $candidate) {
+// Looks for Dompdf either installed with Composer (vendor/) or uploaded as the plain "dompdf" folder.
+foreach ([
+    __DIR__ . '/vendor/autoload.php',
+    dirname(__DIR__) . '/vendor/autoload.php',
+    __DIR__ . '/dompdf/autoload.inc.php',
+    dirname(__DIR__) . '/dompdf/autoload.inc.php',
+] as $candidate) {
     if (is_readable($candidate)) {
         $autoload = $candidate;
         break;
