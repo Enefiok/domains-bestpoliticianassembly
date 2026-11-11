@@ -98,7 +98,7 @@ function emailData(array $env, string $name, string $country, string $location, 
         // Social links: set FACEBOOK_URL, INSTAGRAM_URL, TIKTOK_URL in .env to change them
         // without touching code. The values below are only used when .env has no entry.
         'facebook'      => $env['FACEBOOK_URL'] ?? 'https://www.facebook.com/bestpoliticianassembly.search',
-        'instagram'     => $env['INSTAGRAM_URL'] ?? 'https://www.instagram.com/prec.iousjacob58?psln=NnhhaXl2bDhzMzVi',
+        'instagram'     => $env['INSTAGRAM_URL'] ?? 'https://www.instagram.com/bestpolitician666?cplk=NnhhaXl2bDhzMzVi',
         'tiktok'        => $env['TIKTOK_URL'] ?? 'https://www.tiktok.com/@user8540388832663',
     ];
 }
