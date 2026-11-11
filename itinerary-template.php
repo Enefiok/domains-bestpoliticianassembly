@@ -16,6 +16,23 @@ if (!function_exists('h')) {
     }
 }
 
+/* =====================================================================
+   THINGS YOU EDIT
+   ===================================================================== */
+
+// Venue for each city, shown in the Letter of Invitation.
+// Leave a venue as '' to show the city name instead. Later, type the real hotel or hall,
+// for example 'KUALA' => 'Hotel name, Kuala Lumpur'.
+// The key is a word that appears in the registration location (any capitals).
+function bpVenues(): array
+{
+    return [
+        'KUALA'     => '',
+        'BUCHAREST' => '',
+        'BRUSSELS'  => '',
+    ];
+}
+
 /*
  * The conference programme. Edit this list for each event.
  *
@@ -71,10 +88,49 @@ function defaultItineraryProgram(): array
     ];
 }
 
+/* =====================================================================
+   HELPERS FOR THE LETTER (no need to edit)
+   ===================================================================== */
+
+// "BUCHAREST , ROMANIA" -> "Bucharest, Romania"; "16TH-19TH JUNE , 2027" -> "16th-19th June, 2027"
+function bpTidy(string $s): string
+{
+    $s = strtolower(trim(preg_replace('/\s+/', ' ', $s)));
+    $s = preg_replace('/\s+,/', ',', $s);
+    return preg_replace_callback('/\b([a-z]{3,})\b/', function ($m) {
+        return ucfirst($m[1]);
+    }, $s);
+}
+
+// "24th-27 March, 2027" -> 4. Returns null if the dates cannot be read.
+function bpEventDays(string $date): ?int
+{
+    if (preg_match('/(\d{1,2})\s*(?:st|nd|rd|th)?\s*[-\x{2013}]\s*(\d{1,2})\s*(?:st|nd|rd|th)?\b/iu', $date, $m)) {
+        $days = (int)$m[2] - (int)$m[1] + 1;
+        if ($days >= 1 && $days <= 31) {
+            return $days;
+        }
+    }
+    return null;
+}
+
+function bpVenueFor(string $location): string
+{
+    foreach (bpVenues() as $needle => $venue) {
+        if (stripos($location, $needle) !== false && $venue !== '') {
+            return $venue;
+        }
+    }
+    return bpTidy($location); // no hotel/hall set yet, so show the city
+}
+
 /*
- * Builds the itinerary as HTML, one page per day, with the company letterhead.
+ * Builds the itinerary as HTML: first the Letter of Invitation, then one page per day,
+ * all on the company letterhead.
  * $d needs: brand, name, location, date, logo_url, site_url
+ * Optional: $d['manager_email'] (defaults to conferencemanager.logistics@bestpoliticianassembly.org)
  * $program is optional; it defaults to the list above.
+ * The passport number is a blank line for the delegate to write in by hand.
  * Uses only tables and simple CSS so it also converts cleanly to PDF (Dompdf).
  */
 function buildItineraryHtml(array $d, ?array $program = null): string
@@ -91,10 +147,18 @@ function buildItineraryHtml(array $d, ?array $program = null): string
     $brand    = h($d['brand']);
     $brandCap = h(strtoupper((string)$d['brand']));
     $name     = h($d['name']);
-    $location = h($d['location']);
-    $date     = h($d['date']);
     $logo     = h($d['logo_url']);
     $site     = h($d['site_url']);
+
+    $rawLocation = (string)$d['location'];
+    $rawDate     = (string)$d['date'];
+    $location    = h(bpTidy($rawLocation));
+    $date        = h(bpTidy($rawDate));
+    $venue       = h(bpVenueFor($rawLocation));
+    $days        = bpEventDays($rawDate);
+    $duration    = $date . ($days !== null ? ' (' . $days . ' day' . ($days === 1 ? '' : 's') . ')' : '');
+
+    $managerEmail = h($d['manager_email'] ?? 'conferencemanager.logistics@bestpoliticianassembly.org');
 
     // One mark cell: tick, cross or blank. $onDark = white tick on the navy column.
     $mark = function ($v, bool $onDark = false) use ($tick, $cross): string {
@@ -117,12 +181,13 @@ function buildItineraryHtml(array $d, ?array $program = null): string
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Detailed Itinerary</title>
+<title>Letter of Invitation and Itinerary</title>
 <style>
   @page { margin: 0; }
-  body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #111111; font-size: 13px; }
+  body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #111111; font-size: 13px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .day { page-break-after: always; }
   .day.last { page-break-after: auto; }
+  .letter { page-break-after: always; }
   .band-top { background: <?= $navy ?>; color: #ffffff; text-align: center; padding: 22px 0 22px; border-radius: 0 0 40px 40px; }
   .band-top img { height: 80px; }
   .band-top .brand { font-size: 22px; font-weight: bold; letter-spacing: 2px; margin-top: 8px; }
@@ -142,10 +207,75 @@ function buildItineraryHtml(array $d, ?array $program = null): string
   .atitle { font-size: 13px; font-weight: bold; color: <?= $navy ?>; }
   .adesc  { font-size: 10px; color: #333333; margin-top: 2px; line-height: 1.4; }
   .note { text-align: center; font-size: 12px; margin: 26px 20px 0; line-height: 1.5; }
+
+  /* Letter of Invitation */
+  .lbody { font-size: 12px; line-height: 1.5; }
+  .lbody p { margin: 0 0 9px; text-align: justify; }
+  .lnotice { text-align: center !important; font-weight: bold; font-size: 11px; margin: 0 0 14px !important; }
+  table.details { border-collapse: collapse; margin: 0 0 11px; }
+  table.details td { padding: 2px 14px 2px 0; vertical-align: top; font-size: 12px; }
+  table.details td.label { font-weight: bold; white-space: nowrap; }
+  ul.docs { margin: 0 0 9px; padding-left: 22px; }
 </style>
 </head>
 <body>
 
+  <!-- ===================== LETTER OF INVITATION ===================== -->
+  <div class="letter">
+    <div class="band-top">
+      <img src="<?= $logo ?>" alt="<?= $brand ?>">
+      <div class="brand"><?= $brandCap ?></div>
+      <div class="rule"></div>
+      <div class="title">LETTER OF INVITATION</div>
+    </div>
+
+    <div class="content">
+      <div class="lbody">
+        <p class="lnotice">(NOT TO BE USED AS VISA SUPPORT OR INVITATION LETTER)</p>
+
+        <p>Dear <?= $name ?>,</p>
+
+        <p>We are grateful to inform you that you have been shortlisted to join the <?= $brand ?>, to be held from <strong><?= $date ?></strong> in <strong><?= $location ?></strong>.</p>
+
+        <p>The <?= $brand ?> is an educational assembly of the real-world political organization which engages youths from across the globe, helping them to learn more about the principles of nations, their political beliefs, tactics and democracy, although it is not directly affiliated with any political party.</p>
+
+        <p>The <?= $brand ?> provides participants with a real-world political and democratic setting of international crisis management, where they must navigate complex scenarios that go beyond textbook strategic thinking as future leaders.</p>
+
+        <table class="details">
+          <tr><td class="label">Name:</td><td><?= $name ?></td></tr>
+          <tr><td class="label">Passport number:</td><td>......................................................</td></tr>
+          <tr><td class="label">Duration of stay:</td><td><?= $duration ?></td></tr>
+          <tr><td class="label">Venue:</td><td><?= $venue ?></td></tr>
+          <tr><td class="label">Destination:</td><td><?= $location ?></td></tr>
+        </table>
+
+        <p>Upon confirmation of this email, you are requested to proceed with your payment to enable your participation.</p>
+
+        <p>If the <?= $brand ?> team will be responsible for your trip, a signed letter will be attached.</p>
+
+        <p>The committee will provide accommodation, including meals, local transport from the airports, T-shirts and a tour guide.</p>
+
+        <p>Before departure, please ensure you carry the following mandatory documents with you:</p>
+        <ul class="docs">
+          <li>Valid Passport</li>
+          <li>Police Character Certificate</li>
+          <li>Valid Visa</li>
+          <li>Air tickets</li>
+        </ul>
+
+        <p>This letter does not guarantee a visa or entry into the host country.</p>
+
+        <p>We would love to thank you for your kind cooperation and attention. We look forward to seeing you in <?= $location ?>.</p>
+
+        <p style="margin-bottom:3px;">Regards,</p>
+        <p style="margin-bottom:2px;"><strong>Conference Manager</strong></p>
+        <p style="margin-bottom:2px;"><?= $managerEmail ?></p>
+        <p style="margin-bottom:0;"><?= $brand ?></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== ITINERARY, ONE PAGE PER DAY ===================== -->
 <?php foreach ($program as $i => $day): ?>
   <div class="day<?= $i === $lastIndex ? ' last' : '' ?>">
 

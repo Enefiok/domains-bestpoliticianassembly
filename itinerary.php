@@ -83,5 +83,18 @@ if ($autoload !== null) {
     }
 }
 
+// Without Dompdf the itinerary is a normal web page, so add a "Download as PDF" button.
+// It opens the browser's print window, where the person chooses "Save as PDF".
+// The button hides itself when printing, so it never appears in the saved PDF.
+$toolbar = '<style>'
+    . '@media print{.bp-toolbar{display:none!important}}'
+    . '.bp-toolbar{position:fixed;top:14px;right:14px;z-index:9999;font-family:Arial,Helvetica,sans-serif;text-align:center}'
+    . '.bp-toolbar button{background:#F2B01E;color:#111111;border:0;border-radius:8px;padding:12px 22px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.35)}'
+    . '.bp-toolbar small{display:block;margin-top:5px;font-size:11px;color:#ffffff;text-shadow:0 1px 3px rgba(0,0,0,.8)}'
+    . '</style>'
+    . '<div class="bp-toolbar"><button type="button" onclick="window.print()">Download as PDF</button>'
+    . '<small>Choose &ldquo;Save as PDF&rdquo; in the window that opens</small></div>';
+$html = str_replace('</body>', $toolbar . '</body>', $html);
+
 header('Content-Type: text/html; charset=UTF-8');
 echo $html;
