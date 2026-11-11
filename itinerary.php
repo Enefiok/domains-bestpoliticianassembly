@@ -1,8 +1,10 @@
 <?php
 declare(strict_types=1);
 
-// Opened from the "Download your Itinerary" button in the approval email.
+// Opened from the "Download itinerary" button in the approval email.
 // The link looks like: https://yoursite.org/itinerary.php?t=<32 letters and numbers>
+//   itinerary.php?t=...          shows the Letter of Invitation + itinerary page (with the passport box)
+//   itinerary.php?t=...&pdf=1    downloads the PDF (needs the Dompdf library, see below)
 
 define('APP_MAIL', true);
 
@@ -35,14 +37,29 @@ if (empty($env['SITE_URL'])) {
     notFound();
 }
 
+/* ---------- find the person (and their saved passport number, if any) ---------- */
+
+$passportSupported = true;   // false if the passport_number column has not been added yet
+$r = false;
 try {
-    $pdo  = getDb($env);
-    $stmt = $pdo->prepare("SELECT first_name, last_name, country, location, event_date
-                           FROM registrations
-                           WHERE itinerary_token = ? AND status = 'approved'
-                           LIMIT 1");
-    $stmt->execute([$token]);
-    $r = $stmt->fetch();
+    $pdo = getDb($env);
+    try {
+        $stmt = $pdo->prepare("SELECT first_name, last_name, country, location, event_date, passport_number
+                               FROM registrations
+                               WHERE itinerary_token = ? AND status = 'approved'
+                               LIMIT 1");
+        $stmt->execute([$token]);
+        $r = $stmt->fetch();
+    } catch (Throwable $e) {
+        // The passport_number column is missing: carry on without the passport box.
+        $passportSupported = false;
+        $stmt = $pdo->prepare("SELECT first_name, last_name, country, location, event_date
+                               FROM registrations
+                               WHERE itinerary_token = ? AND status = 'approved'
+                               LIMIT 1");
+        $stmt->execute([$token]);
+        $r = $stmt->fetch();
+    }
 } catch (Throwable $e) {
     error_log('itinerary.php: ' . $e->getMessage());
     notFound();
@@ -52,14 +69,42 @@ if (!$r) {
     notFound();
 }
 
-$fullName = trim($r['first_name'] . ' ' . $r['last_name']);
-$d    = emailData($env, $fullName, (string)$r['country'], (string)$r['location'], (string)$r['event_date']);
-$html = buildItineraryHtml($d);
+/* ---------- save or remove the passport number (form on the page) ---------- */
 
-// If the Dompdf library is installed, send a real PDF.
-// If not, show the itinerary as a normal page (the person can still print or save it as PDF).
+$formError = '';
+if ($passportSupported && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        if (isset($_POST['remove'])) {
+            $pdo->prepare("UPDATE registrations SET passport_number = NULL WHERE itinerary_token = ? AND status = 'approved'")
+                ->execute([$token]);
+            header('Location: itinerary.php?t=' . $token);
+            exit;
+        }
+
+        $p = strtoupper(preg_replace('/\s+/', '', (string)($_POST['passport_number'] ?? '')));
+        if (!preg_match('/^[A-Z0-9]{5,20}$/', $p)) {
+            $formError = 'Please enter 5 to 20 letters or numbers, exactly as in your passport.';
+        } else {
+            $pdo->prepare("UPDATE registrations SET passport_number = ? WHERE itinerary_token = ? AND status = 'approved'")
+                ->execute([$p, $token]);
+            header('Location: itinerary.php?t=' . $token . '&saved=1'); // reload so a refresh does not resubmit
+            exit;
+        }
+    } catch (Throwable $e) {
+        error_log('itinerary.php (passport): ' . $e->getMessage());
+        $formError = 'Sorry, we could not save it right now. Please try again later.';
+    }
+    $r['passport_number'] = null; // do not echo back an invalid entry
+}
+
+/* ---------- build the itinerary ---------- */
+
+$fullName = trim($r['first_name'] . ' ' . $r['last_name']);
+$d = emailData($env, $fullName, (string)$r['country'], (string)$r['location'], (string)$r['event_date']);
+$d['passport_number'] = (string)($r['passport_number'] ?? '');
+
+// Is the Dompdf library installed? (Composer "vendor" folder, or the plain "dompdf" folder uploaded from GitHub)
 $autoload = null;
-// Looks for Dompdf either installed with Composer (vendor/) or uploaded as the plain "dompdf" folder.
 foreach ([
     __DIR__ . '/vendor/autoload.php',
     dirname(__DIR__) . '/vendor/autoload.php',
@@ -72,8 +117,11 @@ foreach ([
     }
 }
 
-if ($autoload !== null) {
+/* ---------- PDF download (?pdf=1) ---------- */
+
+if ($autoload !== null && isset($_GET['pdf'])) {
     try {
+        $html = buildItineraryHtml($d);   // no passport box in the PDF
         require $autoload;
         $options = new \Dompdf\Options();
         $options->set('isRemoteEnabled', true); // lets the PDF load the logo from your site
@@ -85,22 +133,39 @@ if ($autoload !== null) {
         exit;
     } catch (Throwable $e) {
         error_log('itinerary.php (pdf): ' . $e->getMessage());
-        // fall through to the plain page below
+        // fall through to the normal page below
     }
 }
 
-// Without Dompdf the itinerary is a normal web page, so add a "Download as PDF" button.
-// It opens the browser's print window, where the person chooses "Save as PDF".
-// The button hides itself when printing, so it never appears in the saved PDF.
-$toolbar = '<style>'
-    . '@media print{.bp-toolbar{display:none!important}}'
-    . '.bp-toolbar{position:fixed;top:14px;right:14px;z-index:9999;font-family:Arial,Helvetica,sans-serif;text-align:center}'
-    . '.bp-toolbar button{background:#F2B01E;color:#111111;border:0;border-radius:8px;padding:12px 22px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.35)}'
-    . '.bp-toolbar small{display:block;margin-top:5px;font-size:11px;color:#ffffff;text-shadow:0 1px 3px rgba(0,0,0,.8)}'
-    . '</style>'
-    . '<div class="bp-toolbar"><button type="button" onclick="window.print()">Download as PDF</button>'
-    . '<small>Choose &ldquo;Save as PDF&rdquo; in the window that opens</small></div>';
-$html = str_replace('</body>', $toolbar . '</body>', $html);
+/* ---------- the web page: letter + itinerary + passport box + download button ---------- */
+
+$button = ($autoload !== null)
+    ? '<a href="itinerary.php?t=' . $token . '&amp;pdf=1" class="bp-btn">Download PDF</a>'
+    : '<button type="button" class="bp-btn" onclick="window.print()">Download as PDF</button>'
+      . '<small>Choose &ldquo;Save as PDF&rdquo; in the window that opens</small>';
+
+$d['show_form']    = $passportSupported;
+$d['form_action']  = 'itinerary.php?t=' . $token;
+$d['form_error']   = $formError;
+$d['form_saved']   = isset($_GET['saved']) && $formError === '';
+$d['toolbar_html'] = '<div class="bp-toolbar-inline">' . $button . '</div>';
+
+$html = buildItineraryHtml($d);
+
+// If there is no passport box (column not added yet), float the download button in the corner instead.
+if (!$passportSupported) {
+    $html = str_replace('</body>', '<div class="bp-toolbar-fixed">' . $button . '</div></body>', $html);
+}
+
+$css = '<style>'
+    . '.bp-btn{display:inline-block;background:#F2B01E;color:#111111;border:0;border-radius:8px;padding:12px 22px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)}'
+    . '.bp-toolbar-inline{text-align:center;font-family:Arial,Helvetica,sans-serif}'
+    . '.bp-toolbar-inline small{display:block;margin-top:5px;font-size:11px;color:#333333}'
+    . '.bp-toolbar-fixed{position:fixed;top:14px;right:14px;z-index:9999;text-align:center;font-family:Arial,Helvetica,sans-serif}'
+    . '.bp-toolbar-fixed small{display:block;margin-top:5px;font-size:11px;color:#ffffff;text-shadow:0 1px 3px rgba(0,0,0,.8)}'
+    . '@media print{.bp-toolbar-fixed,.bp-toolbar-inline{display:none!important}}'
+    . '</style>';
+$html = str_replace('</head>', $css . '</head>', $html);
 
 header('Content-Type: text/html; charset=UTF-8');
 echo $html;

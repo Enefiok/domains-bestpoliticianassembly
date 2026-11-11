@@ -160,6 +160,17 @@ function buildItineraryHtml(array $d, ?array $program = null): string
 
     $managerEmail = h($d['manager_email'] ?? 'conferencemanager.logistics@bestpoliticianassembly.org');
 
+    // Passport number: shown if the delegate saved one, otherwise a blank line to write in by hand.
+    $passport     = trim((string)($d['passport_number'] ?? ''));
+    $passportCell = $passport !== '' ? h($passport) : '......................................................';
+
+    // The passport box is only built for the web page (never for the PDF).
+    $showForm    = !empty($d['show_form']);
+    $formAction  = h($d['form_action'] ?? '');
+    $formError   = h($d['form_error'] ?? '');
+    $formSaved   = !empty($d['form_saved']);
+    $toolbarHtml = (string)($d['toolbar_html'] ?? '');   // built by itinerary.php, trusted HTML
+
     // One mark cell: tick, cross or blank. $onDark = white tick on the navy column.
     $mark = function ($v, bool $onDark = false) use ($tick, $cross): string {
         if ($v === null) {
@@ -216,9 +227,37 @@ function buildItineraryHtml(array $d, ?array $program = null): string
   table.details td { padding: 2px 14px 2px 0; vertical-align: top; font-size: 12px; }
   table.details td.label { font-weight: bold; white-space: nowrap; }
   ul.docs { margin: 0 0 9px; padding-left: 22px; }
+  @media print { .bp-noprint { display: none !important; } }
 </style>
 </head>
 <body>
+
+<?php if ($showForm): ?>
+  <!-- ===================== PASSPORT BOX (web page only, hidden when printing) ===================== -->
+  <div class="bp-noprint" style="background:#fff8e1;border-bottom:1px solid #e0c97a;padding:14px 40px;font-size:12px;line-height:1.5;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+      <td style="vertical-align:top;">
+        <strong style="font-size:13px;">Passport number (optional)</strong><br>
+        Enter it if you want it printed on your letter. It is only used on your letter, and you can remove it at any time.
+        <?php if ($formError !== ''): ?>
+        <div style="color:#b00020;font-weight:bold;margin-top:5px;"><?= $formError ?></div>
+        <?php endif; ?>
+        <?php if ($formSaved): ?>
+        <div style="color:#1b6e2d;font-weight:bold;margin-top:5px;">Saved. It now appears on your letter below.</div>
+        <?php endif; ?>
+        <form method="post" action="<?= $formAction ?>" style="margin:8px 0 0;">
+          <input type="text" name="passport_number" value="<?= h($passport) ?>" maxlength="20" autocomplete="off" placeholder="e.g. A12345678"
+                 style="padding:9px 10px;font-size:13px;border:1px solid #999999;border-radius:6px;width:200px;">
+          <button type="submit" style="background:<?= $navy ?>;color:#ffffff;border:0;border-radius:6px;padding:10px 18px;font-size:13px;font-weight:bold;cursor:pointer;">Save</button>
+          <?php if ($passport !== ''): ?>
+          <button type="submit" name="remove" value="1" style="background:#ffffff;color:#b00020;border:1px solid #b00020;border-radius:6px;padding:9px 16px;font-size:13px;cursor:pointer;">Remove</button>
+          <?php endif; ?>
+        </form>
+      </td>
+      <td align="right" style="vertical-align:top;white-space:nowrap;padding-left:20px;"><?= $toolbarHtml ?></td>
+    </tr></table>
+  </div>
+<?php endif; ?>
 
   <!-- ===================== LETTER OF INVITATION ===================== -->
   <div class="letter">
@@ -243,7 +282,7 @@ function buildItineraryHtml(array $d, ?array $program = null): string
 
         <table class="details">
           <tr><td class="label">Name:</td><td><?= $name ?></td></tr>
-          <tr><td class="label">Passport number:</td><td>......................................................</td></tr>
+          <tr><td class="label">Passport number:</td><td><?= $passportCell ?></td></tr>
           <tr><td class="label">Duration of stay:</td><td><?= $duration ?></td></tr>
           <tr><td class="label">Venue:</td><td><?= $venue ?></td></tr>
           <tr><td class="label">Destination:</td><td><?= $location ?></td></tr>
